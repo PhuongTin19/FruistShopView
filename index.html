@@ -33,13 +33,247 @@
 <body ng-app="shopping-cart-app" ng-controller="shopping-cart-ctrl">
    
     <!-- HEADER -->
-	<th:block th:include="user/fragments/header"></th:block>
+<div>
+	<!-- Page Preloder -->
+	<div id="preloder">
+		<div class="loader"></div>
+	</div>
+	<!-- Header Section Begin -->
+	<header class="header">
+		<div class="header__top">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-6 col-md-6">
+						<div class="header__top__left">
+							<ul>
+								<li sec:authorize="isAuthenticated()">
+									<i class="bi bi-person-circle"></i>Welcome,
+									<!----><span sec:authentication="name"></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6 ">
+						<div class="header__top__right">
+							<div class="header__top__right__language">
+
+								<img th:src="@{/user/img/language.png}" alt="">
+								<div>Tiếng Anh</div>
+								<span class="arrow_carrot-down"></span>
+								<ul>
+									<li><a href="?lang=vi">Tiếng Việt</a></li>
+									<li><a href="?lang=en">Tiếng Anh</a></li>
+								</ul>
+							</div>
+							<div class="header__top__right__language">
+								<div sec:authorize="!isAuthenticated()">
+									<a style="font-size: 14px;color: #1c1c1c;" th:href="@{/security/login}" th:text="#{nav.login}">Đăng
+										Nhập</a>
+								</div>
+								<div sec:authorize="isAuthenticated()">
+									<a style="font-size: 14px;color: #1c1c1c;" th:href="@{/security/logoff}" th:text="#{nav.logout}" >Đăng
+										Xuất</a>
+								</div>
+							</div>
+							<div class="header__top__right__language">
+								<a style="font-size: 14px;color: #1c1c1c;" th:href="@{/user/register}" th:text="#{nav.register}">Đăng Ký</a>
+							</div>
+							<div class="header__top__right__language">
+								<div sec:authorize="isAuthenticated()">
+									<a style="font-size: 14px;color: #1c1c1c;" th:href="@{/user/infor}"><i
+											class="fa fa-user"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="col-lg-3">
+			<div class="header__logo">
+				<a th:href="@{/index}"><img th:src="@{/user/img/logo3.png}" height="38px" width="190px" alt=""></a>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<nav class="header__menu">
+				<ul>
+					<li class="active"><a th:href="@{/index}" th:text="#{nav.home}">Trang Chủ</a></li>
+					<li><a th:href="@{/user/product}" th:text="#{nav.product}" >Mặt Hàng</a></li>
+					<li><a th:href="@{/user/blog}" th:text="#{nav.blog}" >Blog</a></li>
+					<li><a th:href="@{/contact}" th:text="#{nav.contact}" >Liên Hệ</a></li>
+				</ul>
+				<ul sec:authorize="isAuthenticated()">
+					<li>
+						<a style="margin-left:100px" th:href="@{/order/list}" th:text="#{nav.history}">Thông Tin Mua Hàng</a>
+					</li>
+	 				<li th:if="${#request.isUserInRole('Admin') or #request.isUserInRole('Staff')}">
+						<a th:href="@{/admin}">Quản Lý Admin</a>
+					</li> 
+				</ul>
+			</nav>
+		</div>
+		<div class="col-lg-3">
+			<div class="header__cart">
+				<ul>
+					<!--'+*{username}}" -->
+					<li th:if="${account!=null}" sec:authorize="isAuthenticated()" th:object="${account}">
+						<a th:href="@{'/user/favorite?id='+*{account_id}}"><i class="fa fa-heart"></i>
+							<span>[[${countLike}]]</span></a>
+					</li>
+					<li th:if="${account==null}" sec:authorize="isAuthenticated()" th:object="${session.currentUser}">
+						<a th:href="@{'/user/favorite?id='+*{account_id}}"><i class="fa fa-heart"></i>
+							<span>[[${countLikeFB_GG}]]</span></a>
+					</li>
+					<li><a th:href="@{/cart}"><i class="fa fa-shopping-bag"></i> <span >{{cart.count}} </span></a></li>
+				</ul>
+				<div class="header__cart__price">Tổng tiền: <span>{{cart.amount|number:0}} <sup>đ</sup> </span></div>
+			</div>
+		</div>
+	</div>
+	<div class="humberger__open">
+		<i class="fa fa-bars"></i>
+	</div>
+</div>
+</header>
+<!-- Header Section End -->
+
+
+</div>
 	<!-- SLIDE -->
-	
+	<!-- Hero Section Begin -->
+    <section >
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span th:text="#{home.list}">Danh mục</span>
+                        </div>
+                        <ul>
+                        <li>
+                     		<a th:each="c:${cates}" th:href="@{|/user/product/${c.category_id}|}">[[${c.name}]]</a>
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form th:action="@{/user/product}" method="post">
+                                <input name="keywords" type="text" placeholder="">
+                                <button type="submit" th:text="#{home.search}" class="site-btn"><i class="bi bi-search"></i> Tìm Kiếm</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__text">
+                                <h5><i class="bi bi-telephone-fill"></i> 0901301277</h5>
+                                <span>Hỗ trợ 24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero__item set-bg" data-setbg="/user/img/hero/banner.jpg">
+                        <div class="hero__text">
+                            <span class="text-uppercase" th:text="#{home.span}">TRÁI CÂY TƯƠI</span>
+                            <h2 class="text-uppercase" th:text="#{home.title2}">RAU CỦ QUẢ TƯƠI </h2><br/>
+                            <h3 style="word-spacing: 2px; letter-spacing: 5px" class="text-uppercase text-muted font-weight-bold" th:text="#{home.organic}"> 100% Hữu Cơ</h3>
+                            <br>
+                            <a href="#" class="primary-btn" th:text="#{home.buy}">MUA SẮM NGAY</a>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 	<!-- ARTICLE -->
 	<div th:replace="${main}"></div>
     <!-- FOOTER  -->
-	<th:block th:include="user/fragments/footer"></th:block>
+	<div>
+	  <!-- Footer Section Begin -->
+    <footer class="footer spad" style="background-color: rgb(220, 219, 219)">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="footer__about">
+                        <div class="footer__about__logo">
+                            <a href="./index.html"><img th:src="@{/user/img/logo3.png}" alt=""></a>
+                        </div>
+                        <ul>
+                            <li><i class="bi bi-house-door-fill" th:text="#{footer.address}" 
+                            ></i></li>
+                            <li><i class="bi bi-telephone-fill" th:text="#{footer.phone}"></i></li>
+                            <li><i class="bi bi-envelope-fill" th:text="#{footer.email}"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                    <div class="footer__widget">
+                        <h6 th:text="#{footer.fivehouse}" >Về Five House Market</h6>
+                        <ul>
+                            <li><a href="#" th:text="#{footer.contact}">Liên hệ</a></li>
+                            <li><a href="#" th:text="#{footer.introduce}" >Giới thiệu</a></li>
+                            <li><a href="#" th:text="#{footer.returnPolicy}" > Chính Sách đổi trả</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer__widget">
+                    <h6 th:text="#{footer.product}">Sản phẩm</h6>
+                    <div class="row row-cols-1 row-cols-md-3">
+					  <div class="col mb-4">
+					    <div class="card h-100">
+					      <img th:src="@{/user/img/product/CaiBeXanh.jpg}" class="card-img-top" alt="...">
+					    </div>
+					  </div>
+					  <div class="col mb-4">
+					    <div class="card h-100">
+					      <img th:src="@{/user/img/product/bido.jpg}" class="card-img-top" alt="...">
+					    </div>
+					  </div>
+					  <div class="col mb-4">
+						  <div class="card h-100">
+						      <img th:src="@{/user/img/product/buoi5roi.png}" class="card-img-top" alt="...">
+						  </div>
+					  </div>
+					  <div class="col mb-4">
+					    <div class="card h-100">
+					      <img th:src="@{/user/img/product/nho.jpg}" class="card-img-top" alt="...">
+					    </div>
+					  </div>
+					  <div class="col mb-4">
+					    <div class="card h-100">
+					      <img th:src="@{/user/img/product/ngo1.png}" class="card-img-top" alt="...">
+					    </div>
+					  </div>
+					  <div class="col mb-4">
+					    <div class="card h-100">
+					      <img th:src="@{/user/img/product/product-7.jpg}" class="card-img-top" alt="...">
+					    </div>
+					  </div>					  					  
+					</div>
+                        <div class="footer__widget__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+				<div class="text-center p-3" style="background-color: rgb(190, 190, 190)">
+				    © 2022 Copyright:
+				    <a class="text-white" href="http://localhost:8080/index">fivehousemarket.com</a>
+				  </div>
+                </div>
+            </div> 
+        </div>
+    </footer>
+</div>
 	<button class="scroll-button">
     	<img src="https://tse2.mm.bing.net/th?id=OIP.wmO7qXH-1YzKXygT9RveAQAAAA&pid=Api&P=0" alt="arrow-up" />
   	</button>
